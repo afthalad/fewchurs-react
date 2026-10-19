@@ -1,0 +1,60 @@
+"use client";
+
+import { useState } from "react";
+import { useVote } from "../hooks/useVote";
+import { useBoard } from "./BoardContext";
+import { CommentList } from "./Comments";
+import { FollowForm } from "./FollowForm";
+import { StatusBadge } from "./StatusBadge";
+import { VoteButton } from "./VoteButton";
+import { formatDate } from "./time";
+import type { Feature } from "../types";
+
+export function FeatureCard({
+  feature,
+  defaultCommentsOpen = false,
+}: {
+  feature: Feature;
+  /** Opens the thread straight away, for a board linked to this one request. */
+  defaultCommentsOpen?: boolean;
+}): React.JSX.Element {
+  const { labels, allowComments, cx } = useBoard();
+  const { isPending, toggle } = useVote(feature.id);
+  const [showComments, setShowComments] = useState(defaultCommentsOpen);
+
+  return (
+    <li className={cx("fw-card")}>
+      <VoteButton feature={feature} isPending={isPending} onToggle={() => void toggle()} />
+
+      <div className={cx("fw-card__body")}>
+        <h3 className={cx("fw-card__title")}>{feature.title}</h3>
+        {feature.description && <p className={cx("fw-card__desc")}>{feature.description}</p>}
+
+        <div className={cx("fw-meta")}>
+          <StatusBadge status={feature.status} />
+          <span>{formatDate(feature.createdAt)}</span>
+
+          {allowComments && (
+            <button
+              type="button"
+              className={cx("fw-link")}
+              aria-expanded={showComments}
+              aria-controls={`fw-comments-${feature.id}`}
+              onClick={() => setShowComments((open) => !open)}
+            >
+              {labels.comments} ({feature.commentCount})
+            </button>
+          )}
+
+          <FollowForm feature={feature} />
+        </div>
+
+        {allowComments && showComments && (
+          <div id={`fw-comments-${feature.id}`}>
+            <CommentList featureId={feature.id} />
+          </div>
+        )}
+      </div>
+    </li>
+  );
+}

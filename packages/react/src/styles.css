@@ -1,0 +1,484 @@
+.fewchurs {
+  --fw-bg: #ffffff;
+  --fw-surface: #ffffff;
+  --fw-muted: #f6f6f7;
+  --fw-border: #e5e5e7;
+  --fw-text: #18181b;
+  --fw-subtle: #6b7280;
+  --fw-primary: #ed5f18;
+  --fw-danger: #b91c1c;
+  --fw-radius: 0.75rem;
+  --fw-font: inherit;
+
+  /* Its own background: the board follows the OS colour scheme, the host page may not, and
+     light text on a white page is unreadable. Set --fw-bg: transparent to blend in instead. */
+  background: var(--fw-bg);
+  color: var(--fw-text);
+  font-family: var(--fw-font);
+  font-size: 15px;
+  line-height: 1.5;
+  max-width: 44rem;
+  margin: 0 auto;
+  padding: 1.25rem;
+  border-radius: var(--fw-radius);
+}
+
+@media (prefers-color-scheme: dark) {
+  .fewchurs:not([data-theme="light"]) {
+    --fw-bg: #0b0b0c;
+    --fw-surface: #161618;
+    --fw-muted: #1f1f22;
+    --fw-border: #2a2a2e;
+    --fw-text: #f4f4f5;
+    --fw-subtle: #a1a1aa;
+  }
+}
+
+.fewchurs[data-theme="dark"] {
+  --fw-bg: #0b0b0c;
+  --fw-surface: #161618;
+  --fw-muted: #1f1f22;
+  --fw-border: #2a2a2e;
+  --fw-text: #f4f4f5;
+  --fw-subtle: #a1a1aa;
+}
+
+.fewchurs *,
+.fewchurs *::before,
+.fewchurs *::after {
+  box-sizing: border-box;
+}
+
+.fewchurs .fw-heading {
+  margin: 0 0 0.75rem;
+  font-size: 1.15rem;
+  font-weight: 650;
+}
+
+.fewchurs .fw-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.fewchurs .fw-tabs {
+  display: flex;
+  gap: 0.25rem;
+}
+
+.fewchurs .fw-tab {
+  padding: 0.4rem 0.85rem;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--fw-subtle);
+  font: inherit;
+  font-weight: 500;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+.fewchurs .fw-tab[aria-selected="true"] {
+  background: var(--fw-muted);
+  color: var(--fw-text);
+}
+
+.fewchurs .fw-tab:focus-visible,
+.fewchurs .fw-btn:focus-visible,
+.fewchurs .fw-vote:focus-visible,
+.fewchurs .fw-input:focus-visible,
+.fewchurs .fw-link:focus-visible {
+  outline: 2px solid var(--fw-primary);
+  outline-offset: 2px;
+}
+
+.fewchurs .fw-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.fewchurs .fw-card {
+  display: flex;
+  gap: 0.875rem;
+  padding: 1rem;
+  background: var(--fw-surface);
+  border: 1px solid var(--fw-border);
+  border-radius: var(--fw-radius);
+}
+
+.fewchurs .fw-vote {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-width: 3rem;
+  height: fit-content;
+  padding: 0.4rem 0.5rem;
+  gap: 0.1rem;
+  cursor: pointer;
+  background: var(--fw-muted);
+  border: 1px solid transparent;
+  border-radius: 0.6rem;
+  color: var(--fw-text);
+  font: inherit;
+  line-height: 1.1;
+}
+
+.fewchurs .fw-vote[aria-pressed="true"] {
+  border-color: var(--fw-primary);
+  color: var(--fw-primary);
+}
+
+.fewchurs .fw-vote[disabled] {
+  opacity: 0.6;
+  cursor: progress;
+}
+
+.fewchurs .fw-vote__arrow {
+  font-size: 0.7rem;
+}
+
+.fewchurs .fw-vote__count {
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.fewchurs .fw-card__body {
+  flex: 1;
+  min-width: 0;
+}
+
+.fewchurs .fw-card__title {
+  margin: 0 0 0.25rem;
+  font-size: 1rem;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.fewchurs .fw-card__desc {
+  margin: 0;
+  color: var(--fw-subtle);
+  font-size: 0.9rem;
+  white-space: pre-line;
+  overflow-wrap: anywhere;
+}
+
+.fewchurs .fw-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.6rem;
+  margin-top: 0.6rem;
+  font-size: 0.82rem;
+  color: var(--fw-subtle);
+}
+
+.fewchurs .fw-status {
+  display: inline-block;
+  padding: 0.1rem 0.5rem;
+  border-radius: 999px;
+  background: var(--fw-muted);
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.fewchurs .fw-status--planned {
+  color: #1d4ed8;
+}
+.fewchurs .fw-status--in_progress {
+  color: #b45309;
+}
+.fewchurs .fw-status--done {
+  color: #15803d;
+}
+.fewchurs .fw-status--declined {
+  color: var(--fw-danger);
+}
+
+.fewchurs .fw-link {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--fw-subtle);
+  font: inherit;
+  font-size: 0.82rem;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.fewchurs .fw-link:hover {
+  color: var(--fw-text);
+}
+
+.fewchurs .fw-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  margin: 0 0 1.25rem;
+}
+
+.fewchurs .fw-form--inline {
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  margin: 0.75rem 0 0;
+}
+
+.fewchurs .fw-form__actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.fewchurs .fw-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  flex: 1;
+  min-width: 12rem;
+}
+
+.fewchurs .fw-label {
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+
+.fewchurs .fw-input {
+  width: 100%;
+  padding: 0.55rem 0.7rem;
+  font: inherit;
+  color: var(--fw-text);
+  background: var(--fw-bg);
+  border: 1px solid var(--fw-border);
+  border-radius: 0.55rem;
+}
+
+.fewchurs .fw-textarea {
+  min-height: 5rem;
+  resize: vertical;
+}
+
+.fewchurs .fw-btn {
+  padding: 0.55rem 1rem;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  color: #fff;
+  background: var(--fw-primary);
+  border: 1px solid transparent;
+  border-radius: 0.55rem;
+}
+
+.fewchurs .fw-btn[disabled] {
+  opacity: 0.65;
+  cursor: progress;
+}
+
+.fewchurs .fw-btn--ghost {
+  background: transparent;
+  color: var(--fw-subtle);
+  border-color: var(--fw-border);
+}
+
+.fewchurs .fw-alert {
+  padding: 0.65rem 0.85rem;
+  margin: 0 0 1rem;
+  border-radius: 0.55rem;
+  background: var(--fw-muted);
+  font-size: 0.9rem;
+}
+
+.fewchurs .fw-error {
+  color: var(--fw-danger);
+  font-size: 0.8rem;
+  margin: 0;
+}
+
+.fewchurs .fw-muted {
+  color: var(--fw-subtle);
+  font-size: 0.82rem;
+  margin: 0;
+}
+
+.fewchurs .fw-empty {
+  padding: 2.5rem 1rem;
+  text-align: center;
+  color: var(--fw-subtle);
+}
+
+.fewchurs .fw-empty__title {
+  color: var(--fw-text);
+  font-weight: 600;
+  margin: 0 0 0.25rem;
+}
+
+.fewchurs .fw-comments {
+  margin-top: 0.9rem;
+  padding-top: 0.9rem;
+  border-top: 1px solid var(--fw-border);
+}
+
+.fewchurs .fw-comment-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.fewchurs .fw-comment {
+  font-size: 0.88rem;
+}
+
+.fewchurs .fw-comment__author {
+  font-weight: 600;
+}
+
+.fewchurs .fw-comment__text {
+  margin: 0.15rem 0 0;
+  white-space: pre-line;
+  overflow-wrap: anywhere;
+}
+
+.fewchurs .fw-badge {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--fw-primary);
+}
+
+.fewchurs .fw-pagination {
+  display: flex;
+  justify-content: center;
+  margin-top: 1.25rem;
+}
+
+.fewchurs .fw-branding {
+  margin-top: 1.5rem;
+  text-align: center;
+  font-size: 0.78rem;
+  color: var(--fw-subtle);
+}
+
+.fewchurs .fw-roadmap {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+}
+
+.fewchurs .fw-roadmap__heading {
+  margin: 0 0 0.5rem;
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--fw-subtle);
+}
+
+.fewchurs .fw-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* The deep-linked request, above the list it was linked from. */
+.fewchurs .fw-pinned {
+  padding-bottom: 0.9rem;
+  margin-bottom: 0.9rem;
+  border-bottom: 1px solid var(--fw-border);
+}
+
+/* Loading placeholders shaped like the card, so the board keeps its height while the first
+   page loads. The sweep is decorative: without it the bars are still visible, just static. */
+.fewchurs .fw-skeleton__card {
+  align-items: flex-start;
+}
+
+.fewchurs .fw-skeleton__vote {
+  min-width: 3rem;
+  height: 2.6rem;
+  border-radius: 0.6rem;
+  background: var(--fw-muted);
+}
+
+.fewchurs .fw-skeleton__bar {
+  height: 0.75rem;
+  margin-bottom: 0.5rem;
+  border-radius: 0.3rem;
+  background: var(--fw-muted);
+  background-image: linear-gradient(90deg, transparent, var(--fw-border), transparent);
+  background-size: 200% 100%;
+  background-repeat: no-repeat;
+  animation: fw-shimmer 1.4s ease-in-out infinite;
+}
+
+.fewchurs .fw-skeleton__bar:last-child {
+  margin-bottom: 0;
+}
+
+@keyframes fw-shimmer {
+  from {
+    background-position: -150% 0;
+  }
+  to {
+    background-position: 150% 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fewchurs .fw-skeleton__bar {
+    animation: none;
+    background-image: none;
+  }
+}
+
+.fw-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  background: rgba(0, 0, 0, 0.5);
+}
+
+.fw-dialog {
+  position: relative;
+  width: min(44rem, 100%);
+  max-height: 85vh;
+  overflow-y: auto;
+  padding: 1.5rem;
+  border-radius: 0.9rem;
+  background: var(--fw-surface, #fff);
+}
+
+@media (prefers-color-scheme: dark) {
+  .fw-dialog {
+    background: #161618;
+  }
+}
+
+.fw-dialog__close {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.75rem;
+  border: 0;
+  background: none;
+  font-size: 1.5rem;
+  line-height: 1;
+  color: inherit;
+  cursor: pointer;
+}

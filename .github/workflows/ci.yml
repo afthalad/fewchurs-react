@@ -1,0 +1,86 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        react: ["18", "19"]
+
+    name: React ${{ matrix.react }}
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - run: pnpm install --no-frozen-lockfile
+
+      - name: Pin React ${{ matrix.react }}
+        if: matrix.react == '18'
+        run: pnpm --filter @fewchurs/react add -D react@18 react-dom@18 @types/react@18 @types/react-dom@18
+
+      - run: pnpm typecheck
+      - run: pnpm test
+      - run: pnpm build
+
+  quality:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+      - run: pnpm install --no-frozen-lockfile
+      - run: pnpm lint
+      - run: pnpm format
+      - run: pnpm build
+
+      # The build regenerates these from each package.json, so a diff means a release bumped
+      # the version without the SDK header following it.
+      - name: Fail if SDK_VERSION drifted from package.json
+        run: git diff --exit-code -- packages/react/src/client/version.ts packages/next/src/version.ts
+
+      - run: pnpm size
+      - run: pnpm check:packaging
+
+  key-safety:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+      - run: pnpm install --no-frozen-lockfile
+      - run: pnpm build
+
+      - name: Fail if an API key was committed
+        run: |
+          if grep -rIEn 'fr_(live|test)_[A-Za-z0-9]{6,}' --exclude-dir=.git --exclude-dir=node_modules .; then
+            echo "A Fewchurs API key must never be committed."
+            exit 1
+          fi
+
+      - name: Fail if a key reaches the client bundle
+        working-directory: examples/next-app
+        env:
+          FEWCHURS_API_KEY: fr_live_ci_placeholder_key
+        run: |
+          pnpm exec next build
+          if grep -rIl 'fr_live_' .next/static; then
+            echo "The API key must never appear in a client bundle."
+            exit 1
+          fi

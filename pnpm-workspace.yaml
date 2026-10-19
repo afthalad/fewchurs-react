@@ -1,0 +1,7 @@
+packages:
+  - "packages/*"
+  - "examples/*"
+
+overrides:
+  # fflate 0.8.3 makes attw read an empty tarball ("reading 'filename'"), which breaks check:packaging.
+  fflate: 0.8.2

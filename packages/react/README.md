@@ -1,0 +1,26 @@
+# @fewchurs/react
+
+A Fewchurs feature-request board for any React app — the client, the store, the hooks and the
+components. See the [repository README](../../README.md) for the full guide.
+
+```bash
+pnpm add @fewchurs/react
+```
+
+```tsx
+import { FewchursBoard, FewchursProvider } from "@fewchurs/react";
+import "@fewchurs/react/styles.css";
+
+<FewchursProvider apiKey={import.meta.env.VITE_FEWCHURS_KEY}>
+  <FewchursBoard />
+</FewchursProvider>;
+```
+
+`FewchursBoardDialog` renders the same board in a modal (`open`, `onClose`, plus every board
+prop), and `initialFeatureId` opens the board on one request with its comments expanded.
+
+In a Next.js app, use [`@fewchurs/next`](../next) instead: it renders the board on the server
+and keeps the API key out of the browser.
+
+`@fewchurs/react/core` is the server-safe half — the fetch client, the types, validation and
+error mapping, with no React and no `"use client"` boundary.

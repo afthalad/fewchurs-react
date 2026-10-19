@@ -1,0 +1,146 @@
+import { http, HttpResponse } from "msw";
+import { describe, expect, it } from "vitest";
+import { createFewchursClient } from "../src/client/client";
+import { SDK_VERSION } from "../src/client/constants";
+import packageJson from "../package.json";
+import { BASE_URL, lastRequest, rawFeature, server } from "./server";
+
+function client(overrides = {}) {
+  return createFewchursClient({
+    apiKey: "fr_live_test",
+    baseUrl: BASE_URL,
+    deviceId: "device-1",
+    language: "de-DE",
+    retryDelayMs: 0,
+    ...overrides,
+  });
+}
+
+describe("headers", () => {
+  it("sends the key, device id, SDK name and language", async () => {
+    await client().listFeatures();
+    const request = lastRequest();
+
+    expect(request.headers.get("authorization")).toBe("Bearer fr_live_test");
+    expect(request.headers.get("x-device-id")).toBe("device-1");
+    expect(request.headers.get("x-fewchurs-sdk")).toBe(`react/${packageJson.version}`);
+    expect(request.headers.get("accept-language")).toBe("de-DE");
+  });
+
+  // The header is generated from package.json at build time; this catches a stale checkout.
+  it("reports the published package version", () => {
+    expect(SDK_VERSION).toBe(packageJson.version);
+  });
+
+  it("omits the key in proxy mode", async () => {
+    await client({ apiKey: undefined }).listFeatures();
+    expect(lastRequest().headers.get("authorization")).toBeNull();
+  });
+});
+
+describe("endpoints", () => {
+  it("passes sort, limit and cursor through", async () => {
+    await client().listFeatures({ sort: "top", limit: 5, cursor: "page2" });
+    const url = new URL(lastRequest().url);
+
+    expect(url.searchParams.get("sort")).toBe("top");
+    expect(url.searchParams.get("limit")).toBe("5");
+    expect(url.searchParams.get("cursor")).toBe("page2");
+  });
+
+  it("creates a comment at POST /comments with the feature id in the body", async () => {
+    const result = await client().createComment({ featureId: "a", text: "+1" });
+    const request = lastRequest();
+
+    expect(new URL(request.url).pathname).toBe("/v1/comments");
+    expect(await request.json()).toMatchObject({ featureId: "a", text: "+1" });
+    expect(result.ok).toBe(true);
+  });
+
+  it("reads an unknown status as `unknown` instead of failing", async () => {
+    server.use(
+      http.get(`${BASE_URL}/features`, () =>
+        HttpResponse.json({
+          features: [rawFeature({ id: "a", status: "shipped_to_beta" })],
+          nextCursor: null,
+        }),
+      ),
+    );
+
+    const result = await client().listFeatures();
+    expect(result.ok && result.data.features[0]?.status).toBe("unknown");
+  });
+
+  it("marks the visitor's own comment as theirs", async () => {
+    const result = await client().listComments("a");
+    expect(result.ok && result.data.comments[0]?.isMine).toBe(true);
+    expect(result.ok && "deviceId" in (result.data.comments[0] ?? {})).toBe(false);
+  });
+});
+
+describe("errors", () => {
+  it.each([
+    [401, "invalid_key", "invalid_key"],
+    [400, "validation_failed", "validation_failed"],
+    [400, "missing_device_id", "validation_failed"],
+    [429, "rate_limited", "rate_limited"],
+    [404, "not_found", "not_found"],
+    [402, "limit_reached", "limit_reached"],
+    [500, "internal", "server"],
+  ])("maps %i %s to %s", async (status, code, expected) => {
+    server.use(
+      http.get(`${BASE_URL}/config`, () =>
+        HttpResponse.json({ error: { code, message: "nope" } }, { status }),
+      ),
+    );
+
+    const result = await client({ retries: 0 }).getConfig();
+    expect(result.ok).toBe(false);
+    expect(!result.ok && result.error.code).toBe(expected);
+  });
+
+  it("reports a transport failure as a network error", async () => {
+    server.use(http.get(`${BASE_URL}/config`, () => HttpResponse.error()));
+
+    const result = await client({ retries: 0 }).getConfig();
+    expect(!result.ok && result.error.code).toBe("network");
+  });
+
+  it("rejects input the server would reject, without a round trip", async () => {
+    const result = await client().submitFeature({ title: "no" });
+
+    expect(!result.ok && result.error.code).toBe("validation_failed");
+    expect(() => lastRequest()).toThrow();
+  });
+});
+
+describe("retries", () => {
+  it("retries a GET once after a server error", async () => {
+    let calls = 0;
+    server.use(
+      http.get(`${BASE_URL}/config`, () => {
+        calls += 1;
+        return calls === 1
+          ? HttpResponse.json({ error: { code: "internal", message: "boom" } }, { status: 500 })
+          : HttpResponse.json({ showBranding: false });
+      }),
+    );
+
+    const result = await client().getConfig();
+    expect(calls).toBe(2);
+    expect(result.ok).toBe(true);
+  });
+
+  it("never retries a write", async () => {
+    let calls = 0;
+    server.use(
+      http.post(`${BASE_URL}/comments`, () => {
+        calls += 1;
+        return HttpResponse.json({ error: { code: "internal", message: "boom" } }, { status: 500 });
+      }),
+    );
+
+    await client().createComment({ featureId: "a", text: "hello" });
+    expect(calls).toBe(1);
+  });
+});
