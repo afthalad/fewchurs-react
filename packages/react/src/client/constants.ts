@@ -3,7 +3,7 @@ import { SDK_VERSION } from "./version";
 
 export { SDK_VERSION };
 export const SDK_HEADER = `react/${SDK_VERSION}`;
-export const DEFAULT_BASE_URL = "https://www.fewchurs.shop/api/v1";
+export const DEFAULT_BASE_URL = "https://www.fewchurs.com/api/v1";
 export const DEFAULT_PAGE_SIZE = 20;
 
 /** Mirrors the server's zod schemas, so the UI can reject input before a round trip. */

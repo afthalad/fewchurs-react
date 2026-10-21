@@ -4,7 +4,7 @@
   "description": "A Fewchurs feature-request board for any React app.",
   "license": "SEE LICENSE IN LICENSE",
   "type": "commonjs",
-  "homepage": "https://www.fewchurs.shop",
+  "homepage": "https://www.fewchurs.com",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/fewchurs/fewchurs-react.git",

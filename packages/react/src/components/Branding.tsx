@@ -12,7 +12,7 @@ export function Branding(): React.JSX.Element | null {
     <p className={cx("fw-branding")}>
       <a
         className={cx("fw-link")}
-        href="https://www.fewchurs.shop"
+        href="https://www.fewchurs.com"
         target="_blank"
         rel="noreferrer noopener"
       >

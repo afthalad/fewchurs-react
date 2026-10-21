@@ -8,7 +8,7 @@ export default defineConfig({
     // <FewchursProvider baseUrl="/api/fewchurs">
     proxy: {
       "/api/fewchurs": {
-        target: "https://www.fewchurs.shop/api/v1",
+        target: "https://www.fewchurs.com/api/v1",
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api\/fewchurs/, ""),
         headers: { Authorization: `Bearer ${process.env.FEWCHURS_API_KEY ?? ""}` },

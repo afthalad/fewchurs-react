@@ -1,4 +1,4 @@
-// A local stand-in for https://www.fewchurs.shop/api/v1, so the examples run without a real key.
+// A local stand-in for https://www.fewchurs.com/api/v1, so the examples run without a real key.
 // State lives in memory and resets on restart.
 //
 //   node tools/mock-server.mjs            # http://localhost:4010/v1

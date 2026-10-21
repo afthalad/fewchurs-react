@@ -26,7 +26,7 @@ export type FetchLike = (input: string, init?: RequestInit) => Promise<Response>
 export interface FewchursClientOptions {
   /** Server-side, or in a SPA where the key is publishable. Omit when calling your own proxy. */
   apiKey?: string;
-  /** `https://www.fewchurs.shop/api/v1` by default, or a proxy path such as `/api/fewchurs`. */
+  /** `https://www.fewchurs.com/api/v1` by default, or a proxy path such as `/api/fewchurs`. */
   baseUrl?: string;
   deviceId?: string | null | (() => string | null);
   /** Sent as `Accept-Language`, so server-side copy and emails match the visitor. */
