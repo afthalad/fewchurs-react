@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.0.1 — 2026-10-21
+
+- The default API host is now `https://www.fewchurs.com/api/v1` (was `https://www.fewchurs.shop/api/v1`).
+  Anything that passes an explicit `baseUrl` is unaffected; everything else moves to the new host on
+  upgrade. If you proxy the API, update your own rewrite target too — the `Authorization` header is
+  commonly dropped across a cross-domain redirect, so relying on a redirect from the old host is not
+  a safe substitute.
+- `homepage` and the "powered by" link now point at `https://www.fewchurs.com`.
+
 ## 1.0.0 — 2026-10-19
 
 - `@fewchurs/react`: fetch client, store, hooks (`useFeatures`, `useComments`, `useVote`,
@@ -9,7 +18,7 @@
 - Five customization levels: defaults, CSS variables, props, slots, headless/unstyled.
 - Typed errors, optimistic voting with rollback, cursor paging that survives deleted comments,
   and an `onEvent` callback for analytics.
-- Defaults to the live API at `https://www.fewchurs.com/api/v1`.
+- Defaults to the live API at `https://www.fewchurs.shop/api/v1`.
 - `@fewchurs/next/styles.css`: the board stylesheet is re-exported from the Next.js package,
   so an app that installed only `@fewchurs/next` can import it under pnpm and Yarn PnP.
 - Placeholder rows shaped like the cards on first paint, so the board keeps its height.
